@@ -1,0 +1,79 @@
+# Pygame шаблон - скелет для нового проекта Pygame
+from pygame import *
+from time import time
+from random import randrange
+init()
+res = 800 #Ширина и высота игрового окна
+block = 50
+fps = 5 #Частота кадров с секунду
+
+x, y = randrange(0, res, block), randrange(0, res, block)#размещение змеи
+grape = randrange(0, res, block), randrange(0, res, block)#размещение виноградины
+long = 1 #длинна змейки
+snake = [(x, y)]#змейка
+gx, gy = 0, 0
+dirs = {'w': True, 's': True, 'a': True, 'd': True, }#для того чтобы змейка не могла наежять на своё тело
+score = 0 #счёт
+speed_count, snake_speed = 0, 10
+
+window = display.set_mode([res, res])
+
+clock = time()
+font_score = font.SysFont('Arial', 26, bold=True)#шрифт счёта
+font_end = font.SysFont('Arial', 66, bold=True)#шрифт при проигрыше
+
+def close():#для того чтобы программа закрывалась
+    for e in event.get():
+        if e.type == QUIT:
+            quit()
+
+while True:
+    window.fill(Color("black"))
+    [draw.rect(window, Color('green'), (i, j, block - 1, block - 1)) for i, j in snake]
+    draw.rect(window, Color('red'), (*grape, block, block))#отрисовка ягоды и змеи
+
+    render_score = font_score.render(f'SCORE: {score}', 1, Color('orange'))
+    window.blit(render_score, (5, 5))#отрисовка очков
+
+    speed_count += 1#передвижение змейки
+    if not speed_count % snake_speed:
+        x += gx * block
+        y += gy * block
+        snake.append((x, y))
+        snake = snake[-long:]
+
+    if snake[-1] == grape:#поедание ягод змеёй ,увеличение её длинны и скорости
+        grape = randrange(block, res - block, block), randrange(block, res - block, block)
+        long += 1
+        score += 1
+        snake_speed -= 1
+        snake_speed = max(snake_speed, 4)
+
+    if x < 0 or x > res - block or y < 0 or y > res - block or len(snake) != len(set(snake)):
+        while True:
+            render_end = font_end.render('GAME OVER', 1, Color('orange'))
+            surface.blit(render_end, (res // 2 - 200, res // 3))
+            display.flip()
+            close()#в случае проигрыша
+
+    display.flip()
+    clock.tick(fps)
+    close()
+
+    k = key.get_pressed()
+    if k[K_w]:
+        if dirs['w']:
+            dx, dy = 0, -1
+            dirs = {'w': True, 's': False, 'a': True, 'd': True, }
+    elif k[K_s]:
+        if dirs['s']:
+            dx, dy = 0, 1
+            dirs = {'w': False, 's': True, 'a': True, 'd': True, }
+    elif k[K_a]:
+        if dirs['a']:
+            dx, dy = -1, 0
+            dirs = {'w': True, 's': True, 'a': True, 'd': False, }
+    elif k[K_d]:
+        if dirs['d']:
+            dx, dy = 1, 0
+            dirs = {'w': True, 's': True, 'a': False, 'd': True, }
