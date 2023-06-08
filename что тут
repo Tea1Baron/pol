@@ -1,11 +1,9 @@
 # Pygame шаблон - скелет для нового проекта Pygame
 from pygame import *
-from time import time
 from random import randrange
 init()
-res = 800 #Ширина и высота игрового окна
-block = 50
-fps = 5 #Частота кадров с секунду
+res = 900 #Ширина и высота игрового окна
+block = 20
 
 x, y = randrange(0, res, block), randrange(0, res, block)#размещение змеи
 grape = randrange(0, res, block), randrange(0, res, block)#размещение виноградины
@@ -14,11 +12,10 @@ snake = [(x, y)]#змейка
 gx, gy = 0, 0
 dirs = {'w': True, 's': True, 'a': True, 'd': True, }#для того чтобы змейка не могла наежять на своё тело
 score = 0 #счёт
-speed_count, snake_speed = 0, 10
+speed_count, snake_speed = 0, 50
 
 window = display.set_mode([res, res])
 
-clock = time()
 font_score = font.SysFont('Arial', 26, bold=True)#шрифт счёта
 font_end = font.SysFont('Arial', 66, bold=True)#шрифт при проигрыше
 
@@ -52,28 +49,29 @@ while True:
     if x < 0 or x > res - block or y < 0 or y > res - block or len(snake) != len(set(snake)):
         while True:
             render_end = font_end.render('GAME OVER', 1, Color('orange'))
-            surface.blit(render_end, (res // 2 - 200, res // 3))
+            window.blit(render_end, (res // 2 - 200, res // 3))
             display.flip()
             close()#в случае проигрыша
 
     display.flip()
-    clock.tick(fps)
     close()
 
     k = key.get_pressed()
     if k[K_w]:
         if dirs['w']:
-            dx, dy = 0, -1
+            gx, gy = 0, -1
             dirs = {'w': True, 's': False, 'a': True, 'd': True, }
     elif k[K_s]:
         if dirs['s']:
-            dx, dy = 0, 1
+            gx, gy = 0, 1
             dirs = {'w': False, 's': True, 'a': True, 'd': True, }
     elif k[K_a]:
         if dirs['a']:
-            dx, dy = -1, 0
+            gx, gy = -1, 0
             dirs = {'w': True, 's': True, 'a': True, 'd': False, }
     elif k[K_d]:
         if dirs['d']:
-            dx, dy = 1, 0
+            gx, gy = 1, 0
             dirs = {'w': True, 's': True, 'a': False, 'd': True, }
+
+time.clock().tick(1)
