@@ -2,6 +2,7 @@
 from pygame import *
 from random import randrange
 init()
+display.set_caption("Snake", )
 res = 900 #Ширина и высота игрового окна
 block = 20
 
